@@ -14,3 +14,7 @@
 .got {
   text-decoration: line-through;
 }
+li {
+  list-style: inside;
+  margin-left: 5px;
+}
