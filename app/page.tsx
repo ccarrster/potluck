@@ -64,19 +64,19 @@ function Potluck(){
       <div>
         When: {date} {time}
       </div>
-      <div className='border drop-shadow p-2 m-2 w-1/2'>
+      <div className='border drop-shadow p-2 m-2 w-1/2 bg-yellow-300'>
         <div onClick={onPeopleClick} className='hover:bg-blue-600'>People</div>
         <Invited people={invited} visible={visible}/>
       </div>
-      <div className='border drop-shadow p-2 m-2 w-1/2'>
+      <div className='border drop-shadow p-2 m-2 w-1/2 bg-red-300'>
         <div onClick={onIngredientsClick} className='hover:bg-blue-600'>Ingredients</div>
         <Ingredients ingredients={needs} bringingNeeds={bringingNeeds} visible={visible}/>
       </div>
-      <div className='border drop-shadow p-2 m-2 w-1/2'>
+      <div className='border drop-shadow p-2 m-2 w-1/2 bg-orange-300'>
         <div onClick={onJobsClick} className='hover:bg-blue-600'>Jobs</div>
         <Jobs jobs={jobs} bringingJobs={bringingJobs} visible={visible}/>
       </div>
-      <div className='border drop-shadow p-2 m-2 w-1/2' >
+      <div className='border drop-shadow p-2 m-2 w-1/2 bg-lime-300' >
         <div onClick={onSuppliesClick} className='hover:bg-blue-600'>Supplies</div>
         <Supplies supplies={supplies} bringingSupplies={bringingSupplies} visible={visible} setSupplies={setSupplies} invited={invited} setBringingSupplies={setBringingSupplies}/>
       </div>
@@ -220,21 +220,23 @@ function Bringing({invited, needs, supplies, jobs, bs, bj, bn}){
   let people = [];
   invited.forEach((person, personIndex) => {
     let bringing = [];
-    bs.forEach((personSupplies, bsIndex) => {
-      if(personSupplies[0] == personIndex){
-        bringing.push(<li>{supplies[personSupplies[1]]}</li>);
+    bn.forEach((personNeeds, bnIndex) => {
+      if(personNeeds[0] == personIndex){
+        bringing.push(<li className='bg-red-300'>{needs[personNeeds[1]]}</li>);
       }
     });
     bj.forEach((personJobs, bjIndex) => {
       if(personJobs[0] == personIndex){
-        bringing.push(<li>{jobs[personJobs[1]]}</li>);
+        bringing.push(<li className='bg-orange-300'>{jobs[personJobs[1]]}</li>);
       }
     });
-    bn.forEach((personNeeds, bnIndex) => {
-      if(personNeeds[0] == personIndex){
-        bringing.push(<li>{needs[personNeeds[1]]}</li>);
+    bs.forEach((personSupplies, bsIndex) => {
+      if(personSupplies[0] == personIndex){
+        bringing.push(<li className='bg-lime-300'>{supplies[personSupplies[1]]}</li>);
       }
     });
+    
+    
     people.push(<div className='border m-2 rounded-lg p-2 border-4'><ul>{person} {personIndex} {bringing}</ul></div>);
   });
   return (
