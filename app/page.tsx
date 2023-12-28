@@ -12,16 +12,17 @@ export default function Home() {
 
 let startSupplies = ['Oven', 'Oven Mitt', 'Cupcake Tin', 'Liners'];
 let startBringingSupplies = [[0, 0], [0, 2], [2, 1]];
+let startInvited = ['Daddy', 'Mommy', 'Ellott', 'Jasper', 'Sydney', 'Ben', 'Sophia', 'Freya'];
 
 function Potluck(){
   const [visible, setVisible] = useState(null);
   const [supplies, setSupplies] = useState(startSupplies);
   const [bringingSupplies, setBringingSupplies] = useState(startBringingSupplies);
+  const [invited, setInvited] = useState(startInvited);
 
   let name = 'Frozen Cupcakes :)';
   let date = 'Dec 18, 2023';
   let time = '6:00 PM';
-  let invited = ['Daddy', 'Mommy', 'Ellott', 'Jasper', 'Sydney', 'Ben', 'Sophia', 'Freya'];
   let needs = ['Icing - white', 'Sprinkles', 'Flour', 'Salt', 'Sugar', 'Eggs', 'Milk', 'Baking Soda', 'Chcolate Icing'];
   let jobs = ['Baker', 'Cleaner', 'Decorator'];
   let bringingJobs = [[0, 1], [0, 0], [2, 2]];
@@ -66,7 +67,7 @@ function Potluck(){
       </div>
       <div className='border drop-shadow p-2 m-2 w-1/2 bg-yellow-300'>
         <div onClick={onPeopleClick} className='hover:bg-blue-600'>People</div>
-        <Invited people={invited} visible={visible}/>
+        <Invited people={invited} visible={visible} setPeople={setInvited}/>
       </div>
       <div className='border drop-shadow p-2 m-2 w-1/2 bg-red-300'>
         <div onClick={onIngredientsClick} className='hover:bg-blue-600'>Ingredients</div>
@@ -87,7 +88,9 @@ function Potluck(){
   )
 }
 
-function Invited({people, visible}){
+function Invited({people, visible, setPeople}){
+  let [newPerson, setNewPerson] = useState('');
+
   let out = people.map((person, index) => {
     return <li>{person}</li>
   });
@@ -95,8 +98,19 @@ function Invited({people, visible}){
   if(visible == 'people'){
     newClass = 'block';
   }
+
+  function handleAddPerson(){
+    let clone = people.slice(0);
+    clone.push(newPerson);
+    setPeople(clone);
+    setNewPerson('');
+  }
+  function handleNewPerson(e){
+    setNewPerson(e.target.value);
+  }
   return (
     <>
+    <div><input value={newPerson} onChange={handleNewPerson}></input><button onClick={handleAddPerson}>Add Person</button></div>
     <ul className={newClass}>
     {out}
     </ul>
