@@ -11,10 +11,12 @@ export default function Home() {
 }
 
 let startSupplies = ['Oven', 'Oven Mitt', 'Cupcake Tin', 'Liners'];
+let startBringingSupplies = [[0, 0], [0, 2], [2, 1]];
 
 function Potluck(){
   const [visible, setVisible] = useState(null);
   const [supplies, setSupplies] = useState(startSupplies);
+  const [bringingSupplies, setBringingSupplies] = useState(startBringingSupplies);
 
   let name = 'Frozen Cupcakes :)';
   let date = 'Dec 18, 2023';
@@ -22,7 +24,6 @@ function Potluck(){
   let invited = ['Daddy', 'Mommy', 'Ellott', 'Jasper', 'Sydney', 'Ben', 'Sophia', 'Freya'];
   let needs = ['Icing - white', 'Sprinkles', 'Flour', 'Salt', 'Sugar', 'Eggs', 'Milk', 'Baking Soda', 'Chcolate Icing'];
   let jobs = ['Baker', 'Cleaner', 'Decorator'];
-  let bringingSupplies = [[0, 0], [0, 2], [2, 1]];
   let bringingJobs = [[0, 1], [0, 0], [2, 2]];
   let bringingNeeds = [[2, 1], [4, 5], [4, 4], [4, 2], [5, 3], [5, 0], [1, 6], [1, 7]];
 
@@ -63,17 +64,21 @@ function Potluck(){
       <div>
         When: {date} {time}
       </div>
-      <div className='border drop-shadow p-2 m-2 w-1/2' onClick={onPeopleClick}>
+      <div className='border drop-shadow p-2 m-2 w-1/2'>
+        <div onClick={onPeopleClick} className='hover:bg-blue-600'>People</div>
         <Invited people={invited} visible={visible}/>
       </div>
-      <div className='border drop-shadow p-2 m-2 w-1/2' onClick={onIngredientsClick}>
+      <div className='border drop-shadow p-2 m-2 w-1/2'>
+        <div onClick={onIngredientsClick} className='hover:bg-blue-600'>Ingredients</div>
         <Ingredients ingredients={needs} bringingNeeds={bringingNeeds} visible={visible}/>
       </div>
-      <div className='border drop-shadow p-2 m-2 w-1/2' onClick={onJobsClick}>
+      <div className='border drop-shadow p-2 m-2 w-1/2'>
+        <div onClick={onJobsClick} className='hover:bg-blue-600'>Jobs</div>
         <Jobs jobs={jobs} bringingJobs={bringingJobs} visible={visible}/>
       </div>
-      <div className='border drop-shadow p-2 m-2 w-1/2' onClick={onSuppliesClick}>
-        <Supplies supplies={supplies} bringingSupplies={bringingSupplies} visible={visible} setSupplies={setSupplies}/>
+      <div className='border drop-shadow p-2 m-2 w-1/2' >
+        <div onClick={onSuppliesClick} className='hover:bg-blue-600'>Supplies</div>
+        <Supplies supplies={supplies} bringingSupplies={bringingSupplies} visible={visible} setSupplies={setSupplies} invited={invited} setBringingSupplies={setBringingSupplies}/>
       </div>
       <div>
         <Bringing invited={invited} needs={needs} supplies={supplies} jobs={jobs} bs={bringingSupplies} bj={bringingJobs} bn={bringingNeeds}/>
@@ -92,7 +97,6 @@ function Invited({people, visible}){
   }
   return (
     <>
-    <div>People</div>
     <ul className={newClass}>
     {out}
     </ul>
@@ -116,7 +120,6 @@ function Ingredients({ingredients, bringingNeeds, visible}){
   }
   return (
     <>
-    <div>Ingredients</div>
     <ul className={newClass}>
     {out}
     </ul>
@@ -140,7 +143,6 @@ function Jobs({jobs, bringingJobs, visible}){
   }
   return (
     <>
-    <div>Jobs</div>
     <ul className={newClass}>
     {out}
     </ul>
@@ -148,11 +150,23 @@ function Jobs({jobs, bringingJobs, visible}){
   )
 }
 
-function Supplies({supplies, bringingSupplies, visible, setSupplies}){
-  const [newSupplies, setNewSupplies] = useState('');
+function Choose({ options, handleChoice }){
+  console.log(options);
+  let optionFields = options.map((option, index) => {
+    return(
+     <option value={index}>{option}</option>
+    );
+  });
+  return(
+    <select onChange={handleChoice}>
+      <option value=''></option>
+      {optionFields}
+    </select>
+  );
+}
 
-  
-  console.log(bringingSupplies);
+function Supplies({supplies, bringingSupplies, visible, setSupplies, invited, setBringingSupplies}){
+  const [newSupplies, setNewSupplies] = useState('');
   let out = supplies.map((supply, index) => {
     let stillNeeded= true;
     bringingSupplies.forEach((personSupplies, bsIndex) => {
@@ -160,7 +174,24 @@ function Supplies({supplies, bringingSupplies, visible, setSupplies}){
         stillNeeded = false;
       }
     });
-    return <li className={stillNeeded ? "ingredients" : "ingredients got"}>{supply}</li>
+
+    function updateBringingSupplies(personIndex, supplyIndex){
+      console.log(personIndex);
+      console.log(supplyIndex);
+      let clone = bringingSupplies.splice(0);
+      clone.push([personIndex, supplyIndex]);
+      setBringingSupplies(clone);
+    }
+
+    let selectOut;
+    let localSupply = supply;
+    if(stillNeeded){
+      selectOut = <Choose options={invited} handleChoice={(e) => updateBringingSupplies(e.target.value, index)}></Choose>
+    } else {
+      selectOut = '';
+    }
+
+    return <li className={stillNeeded ? "ingredients" : "ingredients got"}>{supply}{selectOut}</li>
   });
   let newClass = 'hidden';
   if(visible == 'supplies'){
@@ -177,9 +208,8 @@ function Supplies({supplies, bringingSupplies, visible, setSupplies}){
   }
   return (
     <>
-    <div>Supplies</div>
     <div><input value={newSupplies} onChange={handleNewSupplies}></input><button onClick={handleAddSupplies}>Add Supplies</button></div>
-    <ul className={newClass}>
+    <ul className={newClass}>      
     {out}
     </ul>
     </>
@@ -205,7 +235,7 @@ function Bringing({invited, needs, supplies, jobs, bs, bj, bn}){
         bringing.push(<li>{needs[personNeeds[1]]}</li>);
       }
     });
-    people.push(<div className='border'><ul>{person} {personIndex} {bringing}</ul></div>);
+    people.push(<div className='border m-2 rounded-lg p-2 border-4'><ul>{person} {personIndex} {bringing}</ul></div>);
   });
   return (
     <>
